@@ -1,0 +1,12 @@
+streamlit
+openai
+paddleocr
+pillow  
+altair  
+pandas
+python-multipart
+paddlepaddle
+opencv-python
+python-dotenv 
+google-genai
+streamlit-aggrid
