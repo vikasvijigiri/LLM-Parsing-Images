@@ -313,4 +313,4 @@ def render_boxes_component(result_dict: dict, container_width: int = 900, max_bo
 
 
     # Use st.components.v1.html to render HTML safely
-    st_html(final_html, height=1000)
+    st_html(final_html, height = 400,  scrolling = True)

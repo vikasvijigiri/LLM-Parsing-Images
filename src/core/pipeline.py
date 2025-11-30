@@ -69,7 +69,7 @@ class Pipeline:
         return _extract(ground_truth)
 
 
-    #@st.cache_resource
+    @st.cache_resource
     def process_document(_self, file, ground_truth, ocr_use):
         """
         Process a single JPG document with its corresponding ground-truth JSON.
