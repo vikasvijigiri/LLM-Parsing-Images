@@ -1,0 +1,37 @@
+{
+  "agency_details": {
+    "agency_name": "SRI SATYA MAHALAKSHMI GAS AGENCY",
+    "address": "D.No. 8-272/30/3, VUDA Colony, Gopalapatnam, Visakhapatnam-530 027.",
+    "phone_numbers": {
+      "office": "(0891) 2520901 / 2520611 / 2520711",
+      "emergency": "9966 876 938",
+      "complaint": "1800 233 3555",
+      "timing": "8 a.m. to 8 p.m." 
+    }
+  },
+  "customer_details": {
+    "consumer_number": "14.2",
+    "dgcc_book_number": "610393",
+    "name": "N DEMUDU",
+    "address": "7-83, Santhi Nagar, Chintamushidivada 531173"
+  },
+  "order_details": {
+    "order_number_and_date": "LPG ID:2 9110 8915 0000 7214",
+    "delivery_date_and_time": "21/06/2017  15:56:44",
+    "last_delivery_date": "",
+    "cash_memo_number": "1094068",
+    "issue_date": "22/06/17",
+    "delivery_man": "",
+    "kg_cylinder_rs": "677.50"
+  },
+  "subsidy_details": {
+    "subsidy_consumed": "1/12"
+  },
+  "special_instructions": "",
+  "vat_number": "37125851639",
+  "copy_type": "CUSTOMER COPY",
+  "document_type": "GAS BILL"
+}
+
+
+

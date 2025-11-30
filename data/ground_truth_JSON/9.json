@@ -1,0 +1,15 @@
+{
+  "payee": "Wikipedia Foundation",
+  "amount_in_numbers": "100.55",
+  "amount_in_words": "One hundred Dollars and 55/100 Dollars",
+  "date": "9.09.09",
+  "check_number": "243",
+  "payer_name": "Mr. John Jones",
+  "payer_address": "1 Toronto St, Unit 112\nToronto, ON M1R 1Y2",
+  "bank_name": "FAST BANK OF WIKI\nMember FDIC\nToronto, ON M5J 2T3",
+  "memo": "Donation",
+  "signature": "John Jones",
+  "routing_number": "21000001",
+  "account_number": "123456789",
+  "check_additional_code": "243 21000001 123456789 123"
+}

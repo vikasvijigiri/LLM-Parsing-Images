@@ -1,0 +1,37 @@
+{
+  "form_type": "FORM NO.16A",
+  "rule_reference": "See rule 31(1)(b)",
+  "certificate_type": "Certificate under section 203 of the Income-tax Act, 1961 for Tax deducted at source",
+  "deductor": {
+    "name": "STANDARD CHARTERED BANK",
+    "address": "M.G. ROAD, MUMBAI MAHARASHTRA 400023",
+    "pan": "AABCS4681D",
+    "tan": "MUMS25234G"
+  },
+  "deductee": {
+    "name": "REDDY NANDIPATI SREEKANTH",
+    "pan": null
+  },
+  "cit_tds_address": "The Commissioner of Income Tax (TDS)\nRoom No. 900A 9th Floor\nK.G. Mittal Ayurvedic Hospital Building Charni Road\nMumbai 400002",
+  "assessment_year": "2012-13",
+  "period": {
+    "from": "01/01/2012",
+    "to": "31/03/2012"
+  },
+  "summary_of_payment": [
+    {
+      "amount_paid_credited": "1,188.00",
+      "nature_of_payment": "194A - Interest other than Interest on Securities",
+      "date_of_payment_credit": "13/01/2012",
+      "status_of_booking": "MATCHED"
+    },
+    {
+      "amount_paid_credited": "2,375.00",
+      "nature_of_payment": "194A - Interest other than Interest on Securities",
+      "date_of_payment_credit": "14/01/2012",
+      "status_of_booking": "MATCHED"
+    }
+  ],
+  "note": "Name and address is as present in Income Tax PAN database. Apply for PAN change request to update details.",
+  "document_type": "ITR FORM 16"
+}
