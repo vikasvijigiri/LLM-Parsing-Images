@@ -45,7 +45,7 @@ On macOS/Linux: `source venv/bin/activate`
 ## Running the Application
 
 1. Start the Streamlit server  
-`streamlit run src/pages/upload_page1.py`
+`streamlit run app.py`
 
 2. Open the URL provided in the terminal (usually `http://localhost:8501`) in your browser.
 
