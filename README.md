@@ -32,10 +32,10 @@ A Streamlit-based application for automated document parsing and evaluation. Upl
 `cd jpg-image-processor`
 
 2. Create a virtual environment  
-`python -m venv venv` 
-`conda create -n venv python=3.12` (if conda is installed and is in path)
+`python -m venv venv`  
+`conda create -n venv python=3.12` (if conda is installed and is in path)  
 Activate the environment:  
-On Windows: `venv\Scripts\activate`  or  `conda activate venv` (if conda is installed and is in path)
+On Windows: `venv\Scripts\activate`  or  `conda activate venv` (if conda is installed and is in path)  
 On macOS/Linux: `source venv/bin/activate`
 
 3. Upgrade pip  
