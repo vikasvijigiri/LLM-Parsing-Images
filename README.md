@@ -44,7 +44,7 @@ On macOS/Linux: `source venv/bin/activate`
 `pip install -r requirements.txt`
 
 5. Fill the .env file with your API keys (mandatory)
-   e.g. GEMINIAI_API_KEY = "A..."
+e.g. GEMINIAI_API_KEY = "A..."
 ---
 
 ## Running the Application
