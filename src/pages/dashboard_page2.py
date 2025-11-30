@@ -1,7 +1,34 @@
 import streamlit as st
 
+def colored_metric(label, value, color):
+    st.markdown(f"""
+        <div style="
+            padding:12px 16px;
+            border-radius:10px;
+            background-color:#f8f9fa;
+            border:1px solid #eee;
+            display:inline-block;
+            text-align:center;
+            width:100%;
+        ">
+            <div style="font-size:20px;  opacity:1;">
+                {label}
+            </div>
+            <div style="font-size:48px; font-weight:700; color:{color}; margin-top:4px;">
+                {value}
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+
+
+
 
 def run(ui):
+
+
+
+
     st.subheader("📊 Processing Dashboard")
     #ui = StreamlitUI()
     # -------------------------
@@ -16,15 +43,31 @@ def run(ui):
     # -------------------------
     # Top-Level Metrics
     # -------------------------
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Documents", m["total_docs"])
-    col2.metric("Correct Classification", m["correct_classification"])
-    col3.metric("Incorrect Classification", m["incorrect_classification"])
-    col4, col5, col6 = st.columns(3)
-    col4.metric("LLM Failures", m["llm_failures"])
 
-    col5.metric("Correct Predictions", m["correct_predictions"])
-    col6.metric("Incorrect Predictions", m["incorrect_predictions"])
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        colored_metric("Total Documents", m["total_docs"], "#0ea5e9")
+
+    with col2:
+        colored_metric("Correct Classification", m["correct_classification"], "#16a34a")
+
+    with col3:
+        colored_metric("Incorrect Classification", m["incorrect_classification"], "#dc2626")
+
+
+
+
+
+    col4, col5, col6 = st.columns(3)
+
+    with col4:
+        colored_metric("LLM Failures", m["llm_failures"],  "#dc2626")
+    with col5:
+        colored_metric("Correct Predictions", m["correct_predictions"], "#16a34a")
+    with col6:
+        colored_metric("Incorrect Predictions", m["incorrect_predictions"], "#dc2626")
 
     processing_times = m["processing_times"]
     avg_time = round(sum(processing_times) / len(processing_times), 2) if processing_times else 0
@@ -34,8 +77,10 @@ def run(ui):
 
 
     col7, col8, _ = st.columns(3)
-    col7.metric("Avg Processing Time (sec)", avg_time)
-    col8.metric("Avg Accuracy %", avg_accuracy)
+    with col7:
+        colored_metric("Avg Processing Time (sec)", avg_time, "#0ea5e9")
+    with col8:
+        colored_metric("Avg Accuracy %", avg_accuracy, "#0ea5e9")
     # st.subheader("Raw Metrics Data")
     # #st.dataframe(m.to_dict())  # Use to_dict() to convert to dataframe-friendly dict
 

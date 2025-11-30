@@ -9,6 +9,7 @@ from src.core.handlers import RequestHandler
 from src.ui.widgets import FileUploadWidget
 from src.core.state import AppState
 from src.core.pipeline import Pipeline
+from src.services.ocr_service import OCRProcessor
 from src.services.llm_service import LLMImageParser
 from src.services.evaluation_service import Evaluator as GroundTruthEvaluator
 from src.services.localstorage_service import LocalStorage
@@ -125,7 +126,7 @@ def run(ui):
         # MODEL SELECTION (Persistent)
         # -----------------------------
         ui.header("Model")
-        _, col, _ = st.columns([1, 1, 1])
+        _, col, col_ocr = st.columns([1, 0.5, 1])
         with col:
             model_options = [
                 "— Select Model —",
@@ -136,11 +137,16 @@ def run(ui):
                 "groq-0"
             ]
             current_index = model_options.index(saved_model) if saved_model in model_options else 0
-            st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
+            #st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
             model_choice = st.selectbox("Select LLM Model", model_options, index=current_index)
 
             if model_choice != saved_model:
                 AppState.set("selected_model", model_choice)
+
+        with col_ocr:
+            use_ocr = st.checkbox("Enable OCR", value=AppState.get("use_ocr", False))
+            AppState.set("use_ocr", use_ocr)
+
 
         # -----------------------------
         # LOAD GROUND TRUTH JSONS
@@ -160,29 +166,35 @@ def run(ui):
         storage = LocalStorage()
         # Load persistent metrics
         metrics = Metrics()
-        pipeline = Pipeline(llm_service, evaluator, storage, metrics)
+        ocr = OCRProcessor()
+        pipeline = Pipeline(llm_service, evaluator, storage, metrics, ocr)
 
-        _, col, _ = st.columns([1, 1, 1])
+        _, col, _ = st.columns([1, 0.25, 1])
         with col:
             if AppState.get("process_all_clicked") is None:
                 AppState.set("process_all_clicked", False)
 
-            if ui.button("🚀 Process All Files", key="processor") and not AppState.get("process_all_clicked"):
+            if ui.button("🚀 Parse", key="processor") and not AppState.get("process_all_clicked"):
+
 
                 results = []
                 for file in uploaded_jpg_files:
                     gt_data = ground_truth_map[file["name"]]
-                    res = ui.run_with_stopwatch(pipeline.process_document, file=file, ground_truth=gt_data)
+
+
+                    # st.write(file)
+                    use_ocr = AppState.get("use_ocr")
+                    res = ui.run_with_stopwatch(pipeline.process_document, file=file, ground_truth=gt_data, ocr_use=use_ocr)
                     results.append(res)
                     #st.write(metrics.to_dict())    
-                    AppState.set("metrics", metrics.to_dict())
                     AppState.update_metrics(metrics.to_dict())
+                    #AppState.set("metrics", metrics.to_dict())
 
                 AppState.set("pipeline_results", results)
                 AppState.set("process_all_clicked", True)
 
     # -----------------------------
-    # Persistent Image Viewer
+    # Image Viewer
     # -----------------------------
     ui.header("Output")
     c1, c2 = st.columns([1, 1])

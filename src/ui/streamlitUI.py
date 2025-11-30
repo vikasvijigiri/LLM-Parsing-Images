@@ -73,6 +73,21 @@ class StreamlitUI:
                 unsafe_allow_html=True
             )
 
+    def custom_color(self, color: str):
+        st.markdown(f"""
+            <style>
+            /* color for all metric numbers */
+            [data-testid="stMetricValue"] {{
+                color: {color} !important;
+                font-weight: 800 !important;
+            }}
+
+            /* optional: color the delta text */
+            [data-testid="stMetricDelta"] {{
+                color: #16a34a !important;
+            }}
+            </style>
+        """, unsafe_allow_html=True)
 
 
     def header(self, text: str):

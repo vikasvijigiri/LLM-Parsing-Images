@@ -29,11 +29,12 @@ class Pipeline:
     6. Update metrics
     """
 
-    def __init__(self, llm_service, evaluator, storage, metrics):
+    def __init__(self, llm_service, evaluator, storage, metrics, ocr):
         self.llm = llm_service
         self.evaluator = evaluator
         self.storage = storage
         self.metrics = metrics
+        self.ocr = ocr
 
 
     # -----------------------------
@@ -69,7 +70,7 @@ class Pipeline:
 
 
     #@st.cache_resource
-    def process_document(_self, file, ground_truth):
+    def process_document(_self, file, ground_truth, ocr_use):
         """
         Process a single JPG document with its corresponding ground-truth JSON.
 
@@ -100,11 +101,23 @@ class Pipeline:
             with open(file_path, "wb") as f:
                 f.write(file["bytes"])                
 
+            ocr = ""
+            if ocr_use:
+                ocr = _self.ocr.run(file["bytes"])
 
+
+            prompt = (
+                f"You are an exert Image extractor.\n"
+                f"Analyze the image and extract data according to this schema.\n"
+                f"From the options shown below also classify the document_type and fill it in the JSON field appropriately.\n"
+                f"The options are: INVOICE, RECEIPT, GAS BILL, ELECTRICITY BILL, WATER BILL, BANK STATEMENT, SALARY SLIP, PAYSLIP, ITR FORM 16, CHECK, other (use your judgement).\n"
+                f"I have also tried providing a OCR extract for cross checking or for more help, OCR Extracted Text (ignore if empty): {ocr}."
+                f"Return ONLY valid JSON.\n\nSchema Description:\n{schema_description}\n"
+            )
 
             # LLM parsing
             logger.info(f"Running LLM parser for {file["name"]}...")
-            prediction = _self.llm.parse_image(file_path, schema_description)
+            prediction = _self.llm.parse_image(file_path, prompt)
 
 
             # st.write(ground_truth)

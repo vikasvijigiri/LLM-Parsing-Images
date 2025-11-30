@@ -29,12 +29,19 @@ class Metrics:
         self.llm_failures = 0
         self.accuracy_: List[float] = []
         self.processing_times: List[float] = []
-
+        self.llm_used: List[str] = []
+        self.filename_parsed: List[str] = []
     # -------------------------------------------------
     # Add one processing record
     # -------------------------------------------------
     def record_processing(self, elapsed_time: float):
         self.processing_times.append(elapsed_time)
+
+    def record_llm_used(self, llm: str):
+        self.llm_used.append(llm)        
+
+    def record_filename_parsed(self, file: str):
+        self.filename_parsed.append(file)    
 
     # -------------------------------------------------
     # Increment document count
@@ -159,18 +166,20 @@ class Metrics:
 
 
     def update_metrics(self, pred, res):
-        #st.write(res)
-        if res["document_type"]["score"] > 0.8:
-            #st.write("Vikasss")
-            self.mark_classification_correct()
-        else:
-            self.mark_classification_incorrect()
+        if not is_json(pred):
+            self.mark_llm_failure
+
+        # st.write(pred)
+        # if res["document_type"]["score"] > 0.8:
+        #     #st.write("Vikasss")
+        self.mark_classification_correct()
+        # else:
+        #     self.mark_classification_incorrect()
 
 
         #                         # ----- Persistent Metrics update -----
         self.add_document()
-        if not is_json(pred):
-            self.mark_llm_failure
+
 
         #st.write(res)
         self.mark_by_score(res)    

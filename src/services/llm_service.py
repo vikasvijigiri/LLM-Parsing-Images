@@ -1,13 +1,18 @@
 import json
 import os
 import base64
+import asyncio
+import logging
 
 from openai import OpenAI
 from google import genai
 from google.genai import types
 from dotenv import dotenv_values
-#import streamlit as st
-import sys              # ← ADD THIS
+import sys
+
+import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 
 class LLMImageParser:
@@ -50,9 +55,6 @@ class LLMImageParser:
 
         # load API key
         env_key = self.ENV_KEYS[self.provider]
-        env_vars = dotenv_values()
-
-        # Access keys
         api_key = env_vars.get(env_key)
         if not api_key:
             raise ValueError(f"{env_key} not found in environment variables")
@@ -60,34 +62,46 @@ class LLMImageParser:
         # init correct client
         if self.provider == "openai":
             self.client = OpenAI(api_key=api_key)
-
         elif self.provider == "gemini":
             self.client = genai.Client(api_key=api_key)
 
-
     # --------------------------------------------------------
     def _detect_provider(self, model: str) -> str:
-        """
-        Detects provider based on model prefix.
-        """
-
-        # model examples:
-        # gpt-4o-mini → gpt → openai
-        # gemini-2.0-flash → gemini → gemini
         prefix = model.split("-")[0].lower()
-
         for key in self.PROVIDER_MAP:
             if prefix.startswith(key):
                 return self.PROVIDER_MAP[key]
-
         raise ValueError(f"Unknown model provider for: {model}")
 
     # --------------------------------------------------------
-    # Safe JSON
-    # --------------------------------------------------------
     def _safe_json_load(self, text: str):
-        text = text.replace("```json", "").replace("```", "").strip()
-        return json.loads(text)
+        """Clean text from code fences and parse JSON."""
+        try:
+            text = text.strip()
+            for fence in ["```json", "```"]:
+                text = text.replace(fence, "")
+            return json.loads(text)
+        except Exception as e:
+            logger.warning(f"Failed to parse JSON: {e}")
+            return {}
+
+    # --------------------------------------------------------
+    def _read_image_bytes(self, image_file):
+        """Read bytes and detect MIME type from path or Streamlit UploadedFile."""
+        if hasattr(image_file, "read"):  # Streamlit UploadedFile
+            data = image_file.read()
+            image_file.seek(0)
+            mime_type = getattr(image_file, "type", "image/jpeg")
+        else:  # Local file path
+            with open(image_file, "rb") as f:
+                data = f.read()
+            ext = str(image_file).lower()
+            mime_type = "image/jpeg"
+            if ext.endswith(".png"):
+                mime_type = "image/png"
+            elif ext.endswith(".webp"):
+                mime_type = "image/webp"
+        return data, mime_type
 
     # --------------------------------------------------------
     # Public method
@@ -98,7 +112,13 @@ class LLMImageParser:
         return self._parse_gemini(image_path, schema_description)
 
     # --------------------------------------------------------
-    def _parse_openai(self, image_path, schema_description):
+    async def parse_image_async(self, image_path: str, schema_description: str):
+        """Async wrapper for non-blocking Streamlit calls."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self.parse_image, image_path, schema_description)
+
+    # --------------------------------------------------------
+    def _parse_openai(self, image_path, prompt: str):
         with open(image_path, "rb") as f:
             b64 = base64.b64encode(f.read()).decode()
 
@@ -110,10 +130,7 @@ class LLMImageParser:
                     "content": [
                         {
                             "type": "text",
-                            "text": (
-                                "Return ONLY JSON following this structure:\n"
-                                f"{schema_description}"
-                            ),
+                            "text": prompt,
                         },
                         {
                             "type": "image_url",
@@ -123,65 +140,30 @@ class LLMImageParser:
                 }
             ],
         )
-
-        return self._safe_json(response.choices[0].message["content"])
+        return self._safe_json_load(response.choices[0].message["content"])
 
     # --------------------------------------------------------
-
-    def _parse_gemini(self, image_file, schema_description: str):
-        """
-        Parse an image using Google Gemini Vision and return structured JSON.
-        Supports local file path or Streamlit UploadedFile.
-        """
+    @st.cache_resource
+    def _parse_gemini(_self, image_file, prompt: str):
+        """Parse an image using Google Gemini Vision and return structured JSON."""
         try:
-            # -----------------------------
-            # 1. Read image bytes and detect MIME type
-            # -----------------------------
-            mime_type = "image/jpeg"  # Default fallback
+            # Read image bytes and MIME type
+            image_data, mime_type = _self._read_image_bytes(image_file)
 
-            if hasattr(image_file, "read"):  # Streamlit UploadedFile
-                image_data = image_file.read()
-                if hasattr(image_file, "type") and image_file.type:
-                    mime_type = image_file.type
-                # Reset pointer in case the file is reused
-                image_file.seek(0)
-            else:  # Local file path
-                with open(image_file, "rb") as f:
-                    image_data = f.read()
-                ext = str(image_file).lower()
-                if ext.endswith(".png"):
-                    mime_type = "image/png"
-                elif ext.endswith(".webp"):
-                    mime_type = "image/webp"
+            # Prepare prompt
 
-            # -----------------------------
-            # 2. Prepare prompt
-            # -----------------------------
-            prompt = (
-                f"From the options shown below also classify the document_type and fill it in the JSON field appropriately.\n"
-                f"The options are: INVOICE, RECEIPT, GAS BILL, ELECTRICITY BILL, WATER BILL, BANK STATEMENT, PAYSLIP, PURCHASE ORDER, CREDIT NOTE, DEBIT NOTE, OTHERS.\n"
-                f"Analyze the image and extract data according to this schema.\n"
-                f"Return ONLY valid JSON.\n\nSchema Description:\n{schema_description}"
-            )
 
-            # -----------------------------
-            # 3. Call Gemini
-            # -----------------------------
-            response = self.client.models.generate_content(
-                model=self.model,
+            response = _self.client.models.generate_content(
+                model=_self.model,
                 contents=[
                     prompt,
                     types.Part.from_bytes(data=image_data, mime_type=mime_type)
                 ],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                )
+                config=types.GenerateContentConfig(response_mime_type="application/json")
             )
 
-            # -----------------------------
-            # 4. Parse JSON response
-            # -----------------------------
-            return self._safe_json_load(response.text)
+            return _self._safe_json_load(response.text)
 
         except Exception as e:
+            logger.error(f"Gemini parse failed: {e}")
             raise RuntimeError(f"[Gemini ERROR] {e}")

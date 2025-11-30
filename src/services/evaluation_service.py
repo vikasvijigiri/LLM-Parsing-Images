@@ -2,6 +2,9 @@ import json
 from typing import Any, Dict
 import re
 from difflib import SequenceMatcher
+import streamlit as st
+
+
 
 class Evaluator:
     """
@@ -32,23 +35,37 @@ class Evaluator:
             return results
 
         except Exception as e:
-            return {"error": str(e)}
+            return {"evaluate error": str(e)}
 
     # ------------------------------------------------------
-    def _compare_recursive(self, gt, pred, prefix, results):
+    def _compare_recursive(self, gt, pred, prefix: str, results: dict):
         """
-        Walk recursively through the ground-truth structure,
-        and for every leaf field compute similarity.
+        Recursively compare ground-truth and prediction structures.
+        Handles dict, list, tuple, set, and leaf values.
         """
-
+        # ---- DICTIONARY ----
         if isinstance(gt, dict):
             for key, value in gt.items():
                 new_prefix = f"{prefix}.{key}" if prefix else key
                 pred_value = pred.get(key) if isinstance(pred, dict) else None
                 self._compare_recursive(value, pred_value, new_prefix, results)
 
+        # ---- LIST OR TUPLE ----
+        elif isinstance(gt, (list, tuple)):
+            for idx, item in enumerate(gt):
+                new_prefix = f"{prefix}[{idx}]"
+                pred_item = pred[idx] if isinstance(pred, (list, tuple)) and idx < len(pred) else None
+                self._compare_recursive(item, pred_item, new_prefix, results)
+
+        # ---- SET ----
+        elif isinstance(gt, set):
+            # Convert set to sorted list for deterministic comparison
+            gt_list = sorted(gt)
+            pred_list = sorted(pred) if isinstance(pred, set) else (list(pred) if pred else [])
+            self._compare_recursive(gt_list, pred_list, prefix, results)
+
+        # ---- LEAF NODE ----
         else:
-            # Leaf node → compute score
             score = self._compute_score(gt, pred)
             results[prefix] = {
                 "llm_text": pred,
