@@ -65,7 +65,6 @@ On macOS/Linux: `source venv/bin/activate`
    Upload corresponding JSON files in the right column.
    <img width="500" height="479" alt="Screenshot (466)" src="https://github.com/user-attachments/assets/7c7353b2-380f-4f46-9ae8-f61f3af0aae2" />
 
-
 4. **Select Model & OCR Option**  
    Choose your LLM model from the dropdown. Optionally enable or disable OCR for text extraction.
    <img width="500" height="367" alt="Screenshot (467)" src="https://github.com/user-attachments/assets/457b5024-2902-4111-9603-17208f77b630" />
@@ -76,6 +75,7 @@ On macOS/Linux: `source venv/bin/activate`
 6. **View Results**  
    Use the book-like image viewer to navigate images. View processed results in the interactive AgGrid table. Download CSV results page-wise using the download button.
    <img width="500" height="749" alt="Screenshot (468)" src="https://github.com/user-attachments/assets/09312624-106a-46c8-96d6-d27879bea0b6" />
+   <img width="1920" height="817" alt="Screenshot (463)" src="https://github.com/user-attachments/assets/fbc4d933-2b52-4845-9471-6883d584c1d4" />
 
 ---
 
