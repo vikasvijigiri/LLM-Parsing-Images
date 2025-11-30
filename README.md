@@ -58,18 +58,24 @@ On macOS/Linux: `source venv/bin/activate`
 
 1. **Upload JPG Images**  
    Click on the left column upload section and select JPG, JPEG, or PNG files.
+   <img width="895" height="474" alt="Screenshot (466)" src="https://github.com/user-attachments/assets/ed0fa7a2-6641-40e4-b1b4-6ab9961c96f0" />
+
 
 2. **Upload Ground-Truth JSON Files**  
    Upload corresponding JSON files in the right column.
+   <img width="894" height="479" alt="Screenshot (466)" src="https://github.com/user-attachments/assets/7c7353b2-380f-4f46-9ae8-f61f3af0aae2" />
 
-3. **Select Model & OCR Option**  
+
+4. **Select Model & OCR Option**  
    Choose your LLM model from the dropdown. Optionally enable or disable OCR for text extraction.
+   <img width="1920" height="367" alt="Screenshot (467)" src="https://github.com/user-attachments/assets/457b5024-2902-4111-9603-17208f77b630" />
 
-4. **Process All Files**  
-   Click `🚀 Process All Files` to run the processing pipeline. Metrics will update in real-time and persist across the session.
+5. **Parse**  
+   Click `🚀 Parse` Button to run the processing pipeline. Metrics will update in real-time and persist across the session.
 
-5. **View Results**  
+6. **View Results**  
    Use the book-like image viewer to navigate images. View processed results in the interactive AgGrid table. Download CSV results page-wise using the download button.
+   <img width="1920" height="749" alt="Screenshot (468)" src="https://github.com/user-attachments/assets/09312624-106a-46c8-96d6-d27879bea0b6" />
 
 ---
 
