@@ -1,4 +1,7 @@
+
+
 # JPG Image Processor
+![Diagram](images/diagram.png)
 
 A Streamlit-based application for automated document parsing and evaluation. Upload JPG images along with ground-truth JSON files, extract structured data using LLMs (optionally with OCR), track metrics, and generate results in CSV format.
 
